@@ -1,37 +1,122 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <script src="js/script.js" async></script>
 
-    <title>1-SVG</title>
-  </head>
-  <body>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <script src="js/script.js" async></script>
 
-    <h1>Dessiner des formes</h1>
-    <h2>Rectangle</h2>
+  <title>1-SVG</title>
+</head>
 
-    <h2>Donut</h2>
+<body>
+
+  <h1>Dessiner des formes</h1>
+  <h2>Rectangle</h2>
+
+  <svg width="400" height="100">
+    <rect x="0" y="0" width="400" height="100" fill="red"></rect>
+  </svg>
+
+  <h2>Donut</h2>
+  <svg width="400" height="100">
+    <circle cx="50" cy="50" r=50 fill="transparent" stroke="black"></circle>
+    <circle cx="50" cy="50" r=30 fill="transparent" stroke="black"></circle>
+  </svg>
+
+  <h2>Ligne</h2>
+  <!-- Créer une ligne qui passe par un point A (20px, 50px), 
+    qui a une longuer de 60px et a une pente de 5 -->
+
+  <svg width="400" height="100">
+    <line x1="20" y1="50" x2="31.92" y2="108.8" stroke="red"></line>
+  </svg>
 
 
-    <h2>Ligne</h2>
+
+  <h2>Path</h2>
+  <!--  
+    M = moveto
+    L = lineto
+    H = horizontal lineto
+    V = vertical lineto
+    C = curveto
+    S = smooth curveto
+    Q = quadratic Bézier curve
+    T = smooth quadratic Bézier curveto
+    A = elliptical Arc
+    Z = closepath
+    -->
+
+  <!-- M 0 80 C 40 10, 65 10, 95 80 S 150 150, 180 80 -->
+
+  <svg width="800" height="100">
+    <!-- <circle cx="0" cy="0" r="4" fill="red"></circle> -->
+    <path d=" M 10 100 L 10 0 C 10 0, 100 50, 10 100     
+                M 70 100 L 100 0 L 130 100 M 120 70 H 80
+                M 150 100 L 150 0 C 150 0, 250 30, 150 60 L 200 100
+                M 230 100 L 230 0
+            
+                M 290 0 C 290 0, 210 50, 290 100
+                M 290 0 C 290 0, 370 50, 290 100
+         
+
+      
+
+    
+    " fill="none" stroke="steelblue" stroke-width="5"></path>
+  </svg>
 
 
-    <h2>Path</h2>
+  <h1>Animer des formes</h1>
 
 
-    <h1>Animer des formes</h1>
+  <svg class="svg-path" width="1000" height="150">
+    <path fill="none" stroke="lightgrey" d=" M 10 100 L 10 0 C 10 0, 100 50, 10 100" />
 
-    <h2>On click</h2>
+    <circle r="5" fill="red">
+      <animateMotion dur="5s" repeatCount="indefinite" path=" M 10 100 L 10 0 C 10 0, 100 50, 10 100" />
+    </circle>
+  </svg>
 
-    <h2>On hover</h2>
-
-    <h2>Prenez la première lettre de votre prénom que vous avez créée ci-dessus. Faite bouger une forme de votre choix le long de la lettre</h2>
 
 
-  </body>
+  <svg class="svg-path" width="1000" height="150">
+    <path fill="none" stroke="lightgrey" d="M20,50 C20,-50 180,150 180,50 C180-50 20,150 20,50 z" />
+
+    <circle r="5" fill="red">
+      <animateMotion dur="10s" repeatCount="indefinite" path="M20,50 C20,-50 180,150 180,50 C180-50 20,150 20,50 z" />
+    </circle>
+  </svg>
+
+
+
+
+
+</html>
+
+<h2>On click</h2>
+
+<svg width="400" height="100">
+  <rect class="rectangle " x="0" y="0" width="400" height="100" fill="red"></rect>
+</svg>
+
+<h2>On hover</h2>
+<svg width="1000" height="1000">
+  <circle class="donut" cx="100" cy="100" r=50 fill="transparent" stroke="black"></circle>
+  <circle cx="100" cy="100" r=30 fill="transparent" stroke="black"></circle>
+</svg>
+
+<h2>Prenez la première lettre de votre prénom que vous avez créée ci-dessus. Faite bouger une forme de votre choix le
+  long de la lettre</h2>
+<svg width="800" height="100">
+  <!-- <circle cx="0" cy="0" r="4" fill="red"></circle> -->
+  <path d=" M 10 100 L 10 0 C 10 0, 100 50, 10 100" fill="none" stroke="steelblue" stroke-width="5"></path>
+</svg>
+
+</body>
+
 </html>
