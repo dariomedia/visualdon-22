@@ -37,7 +37,7 @@ const svg = d3
 
 svg.append("text")      //titre du graphique
     .attr("x", (width / 6))
-    .attr("y", 20 - (margin.top / 2))
+    .attr("y", 50 - (margin.top / 2))
     .style("background-color", "white")
     .style("text-align", "center")
     .style("font-size", "30px")
@@ -181,17 +181,18 @@ svg2
 //Creation d'une legende sur la base des couleurs sur la carte
 //Représenter la légende à l'aide de la création d'un élement svg et de l'utilisation de la méthode call() 
 //ne marche pas
-legend1 = function (container) {
-    const svg = d3.create('svg')
-        .attr('width', 300)
-        .attr('height', 130);
 
-    const legend = svg.append('g')
-        .attr('transform', 'translate(0, 10)')
-        .attr('color', 'colorScale')
-        .call(container => legend1(container));
-    return svg.node()
-}
+// legend1 = function (container) {
+//     const svg = d3.create('svg')
+//         .attr('width', 300)
+//         .attr('height', 130);
+
+//     const legend = svg.append('g')
+//         .attr('transform', 'translate(0, 10)')
+//         .attr('color', 'colorScale')
+//         .call(container => legend1(container));
+//     return svg.node()
+// }
 
 
 //deuxieme option de creation d'une legende
@@ -247,16 +248,17 @@ function monEsperanceDeVie(country) {
     // console.log(country);
     try {
         // se il paese è nel tableau (life_expectancy_years)
-        const c = esperanceVie.find((myLifeCountry) => myLifeCountry.country === country);
-        return c["2021"]; //affiche della data scritta: in questo caso "2021"
+        const n = esperanceVie.find((myLifeCountry) => myLifeCountry.country === country);
+        return n["2021"]; //affiche della data scritta: in questo caso "2021"
     }
     catch (e) {
-        return null; //se il paese non è nel tableau (life_expectancy_years) allora non c'è nessun dato
+        return null; //se il paese non è nel tableau (life_expectancy_years) allora non n'è nessun dato
     }
     //se nessun dato è presente il colore del paese sarà grigio
 }
 
 // L'obiettivo era di fare una barra temporale per visualizzare l'evolutione dei dati nella cartina nel tempo, dal 1800 fino al 2100, ma non funziona
+
 // const minDate = new Date('1800-01-01'),
 //     maxDate = new Date('2100-01-01'),
 //     interval = maxDate.getFullYear() - minDate.getFullYear() + 1,
@@ -282,21 +284,6 @@ function monEsperanceDeVie(country) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Partie 03 - Animation
 
 //Animer les données selon les années.
@@ -304,9 +291,187 @@ function monEsperanceDeVie(country) {
 //Cela doit ressembler à la visualisation proposée par Gapminder.
 
 
+//Le code de base est identique a celui du premier graphique
+// Création d'un élément svg graphique avec ses marges dans le div #staticGraph
+const svg3 = d3
+    .select('#animation')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+svg3.append("text")      //titre du graphique
+    .attr("x", (width / 6))
+    .attr("y", 50 - (margin.top / 2))
+    .style("background-color", "white")
+    .style("text-align", "center")
+    .style("font-size", "30px")
+    .style("font-weight", "bold")
+    .style("color", "black")
+    .text("Animation");
+
+// Création d'un nouveau tableau pour regrouper les informations désirées des 3 tableaux csv ()
+let datas3 = [];
+
+PIB.map(e => {
+    datas3.push({ //Appends new elements to the end of an array, and returns the new length of the array.
+        pays: e.country,
+        PIB: e["2021"],
+        esperance_vie: d3
+            .filter(esperanceVie, (ev) => ev.country == e.country)
+            .map((d) => d["2021"])[0],
+        population: d3
+            .filter(population, (p) => p.country == e.country)
+            .map((d) => d["2021"])[0]
+    });
+});
+//Idealmente i 3 valori in cui è indicato 2021 dovrebbero poter essere dinamici.
+//Ho pensato ad una boucle for che parte da 1800 e finisce a 2100, ed in seguito associare quest'ultima alla barra temporale posta in basso del grafico
 
 
+// ajout de l'axe x
+const x3 = d3
+    .scaleLinear()
+    .domain([0, 100000])
+    .range([0, width]);
+
+svg3.append('g')
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x3));
 
 
+// Ajout de l'axe y
+const y3 = d3
+    .scaleLinear()
+    .domain([40, 100])
+    .range([height, 0])
 
+svg3.append('g')
+    .call(d3.axisLeft(y3));
+
+// Ajout d'une grandeur aux ronds
+const z3 = d3
+    .scaleLinear()
+    .domain([200000, 1310000000]) //Sets the scale’s domain to the specified array of numbers. The array must contain two or more elements. 
+    .range([1, 40]);    //augmenter le rayon des points
+
+// Ajout des points -> circles
+svg3
+    .append("g")
+    .selectAll("dot")
+    .data(datas3)
+    .join("circle")
+    .attr("cx", (d) => x(cleanData3(d.PIB)))
+    .attr("cy", (d) => y(cleanData3(d.esperance_vie)))
+    .attr("r", (d) => z(cleanData3(d.population) * 5))
+    .style("fill", "crimson")
+    .style("opacity", "0.8")
+    .attr("stroke", "black");
+
+
+//function fournie par Vincent ... merci Vincent :D
+//cette fonction sert à expoliter les elements du graphique. Les données sont donc mieux lisibles
+
+function cleanData3(data3) {
+    if (isNaN(data3)) {
+        if (data3.includes("k")) { // Passer de k à 1000
+            const n = data3.split("k")[0];
+            return Number.parseFloat(n) * 1000;
+        }
+        else if (data3.includes("M")) { // Passer de M à 1000000
+            const n = data3.split("M")[0];
+            return Number.parseFloat(n) * 1000000;
+        }
+    }
+    return data3;
+}
+
+
+//Premier essai d'animation..
+let IntervId;
+function animateEssai() {
+    // console.log(nIntervId);
+    if (IntervId) {
+        clearInterval(IntervId);
+    }
+    IntervId = setInterval(() => {
+        // console.log(nIntervId);
+        const year = slider.value().getFullYear();
+        // console.log(year);
+        if (year < 2100) { //2100 c'est le maximum d'année possible dans le tableau
+            slider.value(new Date(year + 1, 0, 1));
+        }
+        else {
+            clearInterval(IntervId);
+        }
+    }, 1000);
+}
+animateEssai();
+
+//Animation avec slider.. toujours le mem problème
+
+// const slider = d3.sliderBottom()
+//     .min(new Date(1800, 0, 1))
+//     .max(new Date(2100, 0, 1))
+//     .step(1000 * 60 * 60 * 24 * 365)
+//     .width(500)
+//     .tickFormat(d3.timeFormat('%Y'))
+//     .default(new Date(2000, 0, 1))
+//     .on('onchange', val => {
+//         d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+//     });
+
+
+//Animation proposée par la prof dans son cours de VisualDon
+// Variable où on stocke l'id de notre intervalle
+let nIntervId;
+
+function animate() {
+    // regarder si l'intervalle a été déjà démarré
+    if (!nIntervId) {
+        nIntervId = setInterval(play, 1000);
+    }
+}
+
+let i = 0;
+function play() {
+    // Recommencer si à la fin du tableau
+    if (i == data.length - 1) {
+        i = 0;
+    } else {
+        i++;
+    }
+
+    // Mise à jour graphique
+    d3.select('#animation').text(data[i].annee)
+    updateChart([data[i]]);
+}
+
+// Mettre en pause
+function stop() {
+    clearInterval(nIntervId);
+    nIntervId = null;
+}
+
+// Fonction de mise à jour du graphique
+function updateChart(data_iteration) {
+
+    svg.selectAll('circle')
+        .data(data_iteration)
+        .join(enter => enter.append('circle')
+            .attr('cx', 300)
+            .attr('cy', 150).transition(d3.transition()
+                .duration(500)
+                .ease(d3.easeLinear)).attr('r', d => d.valeur),
+            update => update.transition(d3.transition()
+                .duration(500)
+                .ease(d3.easeLinear)).attr('r', d => d.valeur),
+            exit => exit.remove())
+}
+
+// Event listener
+document.getElementById("play").addEventListener("click", animate);
+document.getElementById("stop").addEventListener("click", stop);
+;
 
